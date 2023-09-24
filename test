@@ -1,0 +1,5 @@
+test = (arg0) <<
+	print(arg0);
+>>;
+
+test(5);
