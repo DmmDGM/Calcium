@@ -1,0 +1,3 @@
+variable = 2;
+variable = "hello";
+console.output(variable);
