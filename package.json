@@ -1,12 +1,16 @@
 {
-  "name": "calcium",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+	"author": "DmmD GM",
+	"dependencies": {
+		"@types/node": "^20.12.7"
+	},
+	"description": "Calcium programming language.",
+	"keywords": [],
+	"license": "MIT",
+	"main": "out/index.js",
+	"name": "calcium",
+	"scripts": {
+		".": "tsc && node . && exit 0"
+	},
+	"type": "module",
+	"version": "1.0.0"
 }
