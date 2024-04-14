@@ -1,16 +1,9 @@
 // Defines types
-export type Branch = {
-	parent: Branch | null;
+export type Group = {
 	index: number;
 	type: string;
-	value: (Branch | Token)[];
-};
-
-export type Expression = {
-	index: number;
-	type: string;
-	value: (Branch | Expression | Token)[];
-};
+	value: (Group | Token)[];
+}
 
 export type Token = {
 	index: number;

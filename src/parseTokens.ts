@@ -17,8 +17,8 @@ export const metasRight = {
 	"}": { block: "curly", type: "curly_right" }
 };
 export const metasString = {
-	"single_string": { pattern: /^([^\\'{]*(\\.)*)*/ },
-	"double_string": { pattern: /^([^\\"{]*(\\.)*)*/ }
+	"single": { pattern: /^([^\\'{]*(\\.)*)*/ },
+	"double": { pattern: /^([^\\"{]*(\\.)*)*/ }
 };
 export const metasSymbol = {
 	"+": { type: "add" },
@@ -63,7 +63,7 @@ export function parseTokens(source: string): Token[] {
 
 	// Parses tokens
 	while(unparsed.length) {
-		// Defines current block
+		// Defines current context
 		const block = blocks[blocks.length - 1];
 
 		// Matches string
@@ -136,13 +136,6 @@ export function parseTokens(source: string): Token[] {
 }
 
 // Creates finders
-export function matchExact(source: string, target: string) : string | null {
-	// Finds match
-	if(target.length === 0) return null;
-	const match = source.slice(0, target.length);
-	return (match === target) ? match : null;
-}
-
 export function matchAny(source: string, targets: string[]): string | null {
 	// Finds match
 	for(let i = 0; i < targets.length; i++) {
@@ -153,7 +146,12 @@ export function matchAny(source: string, targets: string[]): string | null {
 	}
 	return null;
 }
-
+export function matchExact(source: string, target: string) : string | null {
+	// Finds match
+	if(target.length === 0) return null;
+	const match = source.slice(0, target.length);
+	return (match === target) ? match : null;
+}
 export function matchPattern(source: string, target: RegExp): string | null {
 	// Finds match
 	const match = source.match(target);
