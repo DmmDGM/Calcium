@@ -118,7 +118,7 @@ export const metasSymbol = {
 	";": {
 		type: "semicolon"
 	}
-}
+};
 
 // Creates keys
 export const keysBracketLeft = Object.keys(metasBracketLeft).sort((a, b) => a.length - b.length);
@@ -144,16 +144,16 @@ export function parseTokens(source: string): Token[] {
 		const block = blocks[blocks.length - 1];
 
 		// Matches string
-		if(block === "single_string" || block === "double_string") {
-			const meta = metasString[block];
-			const matchString = findPattern(unparsed, meta.pattern);
-			if(matchString !== null && matchString.length !== 0) {
+		if(block in metasString) {
+			const meta = metasString[block as keyof typeof metasString];
+			const matchString = matchPattern(unparsed, meta.pattern);
+			if(matchString !== null) {
 				advance("string", matchString);
 			}
 		}
 
 		// Matches right bracket
-		const matchBracketRight = findOne(unparsed, keysBracketRight);
+		const matchBracketRight = matchAny(unparsed, keysBracketRight);
 		if(matchBracketRight !== null) {
 			const meta = metasBracketRight[matchBracketRight as keyof typeof metasBracketRight];
 			if(block === meta.block) {
@@ -164,7 +164,7 @@ export function parseTokens(source: string): Token[] {
 		}
 
 		// Matches left bracket
-		const matchBracketLeft = findOne(unparsed, keysBracketLeft);
+		const matchBracketLeft = matchAny(unparsed, keysBracketLeft);
 		if(matchBracketLeft !== null) {
 			const meta = metasBracketLeft[matchBracketLeft as keyof typeof metasBracketLeft];
 			advance(meta.type, matchBracketLeft);
@@ -173,21 +173,21 @@ export function parseTokens(source: string): Token[] {
 		}
 
 		// Matches space
-		const matchSpace = findPattern(unparsed, /^(\s+|#:.*?:#)+/);
+		const matchSpace = matchPattern(unparsed, /^(\s+|#:.*?:#)+/);
 		if(matchSpace !== null) {
 			advance("space", matchSpace);
 			continue;
 		}
 
 		// Matches number
-		const matchNumber = findPattern(unparsed, /^[+-]?(\d*\.\d+|\d+(\.\d*)?)(e[+-]?\d+)?/);
+		const matchNumber = matchPattern(unparsed, /^[+-]?(\d*\.\d+|\d+(\.\d*)?)(e[+-]?\d+)?/);
 		if(matchNumber !== null) {
 			advance("number", matchNumber);
 			continue;
 		}
 
 		// Matches symbol
-		const matchSymbol = findOne(unparsed, keysSymbol);
+		const matchSymbol = matchAny(unparsed, keysSymbol);
 		if(matchSymbol !== null) {
 			const meta = metasSymbol[matchSymbol as keyof typeof metasSymbol];
 			advance(meta.type, matchSymbol);
@@ -195,7 +195,7 @@ export function parseTokens(source: string): Token[] {
 		}
 
 		// Matches identifier
-		const matchIdentifier = findPattern(unparsed, /^[a-zA-Z_][a-zA-Z0-9_]*/);
+		const matchIdentifier = matchPattern(unparsed, /^[a-zA-Z_][a-zA-Z0-9_]*/);
 		if(matchIdentifier !== null) {
 			advance("identifier", matchIdentifier);
 			continue;
@@ -213,25 +213,28 @@ export function parseTokens(source: string): Token[] {
 }
 
 // Creates finders
-export function findExact(source: string, target: string) : string | null {
+export function matchExact(source: string, target: string) : string | null {
 	// Finds match
+	if(target.length === 0) return null;
 	const match = source.slice(0, target.length);
-	return match === target ? match : null;
+	return (match === target) ? match : null;
 }
 
-export function findOne(source: string, targets: string[]): string | null {
+export function matchAny(source: string, targets: string[]): string | null {
 	// Finds match
 	for(let i = 0; i < targets.length; i++) {
-		const match = source.slice(0, targets[i].length);
-		if(match === targets[i]) return match;
+		let target = targets[i];
+		if(target.length === 0) continue;
+		const match = source.slice(0, target.length);
+		if(match === target) return match;
 	}
 	return null;
 }
 
-export function findPattern(source: string, target: RegExp): string | null {
+export function matchPattern(source: string, target: RegExp): string | null {
 	// Finds match
 	const match = source.match(target);
-	return match === null ? null : match[0];
+	return (match === null || match[0].length === 0) ? null : match[0];
 }
 
 // Exports
