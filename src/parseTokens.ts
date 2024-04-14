@@ -2,127 +2,50 @@
 import { Token } from "./types.js";
 
 // Creates metas
-export const metasBracketLeft = {
-	"'": {
-		block: "single_string",
-		type: "single_quote_left"
-	},
-	"\"": {
-		block: "double_string",
-		type: "double_quote_left"
-	},
-	"(": {
-		block: "round",
-		type: "round_left"
-	},
-	"[": {
-		block: "square",
-		type: "square_left"
-	},
-	"{": {
-		block: "curly",
-		type: "curly_left"
-	}
+export const metasLeft = {
+	"'": { block: "single", type: "quote_left" },
+	"\"": { block: "double", type: "quote_left" },
+	"(": { block: "round", type: "round_left" },
+	"[": { block: "square", type: "square_left" },
+	"{": { block: "curly", type: "curly_left" }
 };
-export const metasBracketRight = {
-	"'": {
-		block: "single_string",
-		type: "single_quote_right"
-	},
-	"\"": {
-		block: "double_string",
-		type: "double_quote_right"
-	},
-	")": {
-		block: "round",
-		type: "round_right"
-	},
-	"]": {
-		block: "square",
-		type: "square_right"
-	},
-	"}": {
-		block: "curly",
-		type: "curly_right"
-	}
+export const metasRight = {
+	"'": { block: "single", type: "quote_right" },
+	"\"": { block: "double", type: "quote_right" },
+	")": { block: "round", type: "round_right" },
+	"]": { block: "square", type: "square_right" },
+	"}": { block: "curly", type: "curly_right" }
 };
 export const metasString = {
-	"single_string": {
-		pattern: /^([^\\'{]*(\\.)*)*/
-	},
-	"double_string": {
-		pattern: /^([^\\"{]*(\\.)*)*/
-	}
+	"single_string": { pattern: /^([^\\'{]*(\\.)*)*/ },
+	"double_string": { pattern: /^([^\\"{]*(\\.)*)*/ }
 };
 export const metasSymbol = {
-	"+": {
-		type: "add"
-	},
-	"-": {
-		type: "subtract"
-	},
-	"*": {
-		type: "multiply"
-	},
-	"/": {
-		type: "divide"
-	},
-	"%": {
-		type: "modulo"
-	},
-	"^": {
-		type: "power"
-	},
-	"**": {
-		type: "power"
-	},
-	"<": {
-		type: "less"
-	},
-	"<=": {
-		type: "less_equal"
-	},
-	"==": {
-		type: "equal"
-	},
-	"!=": {
-		type: "not_equal"
-	},
-	">": {
-		type: "greater"
-	},
-	">=": {
-		type: "greater_equal"
-	},
-	"!": {
-		type: "not"
-	},
-	"&": {
-		type: "and"
-	},
-	"|": {
-		type: "or"
-	},
-	"=": {
-		type: "define"
-	},
-	".": {
-		type: "dot"
-	},
-	",": {
-		type: "comma"
-	},
-	":": {
-		type: "colon"
-	},
-	";": {
-		type: "semicolon"
-	}
+	"+": { type: "add" },
+	"-": { type: "subtract" },
+	"*": { type: "multiply" },
+	"/": { type: "divide" },
+	"%": { type: "modulo" },
+	"**": { type: "power" },
+	"<": { type: "less" },
+	"<=": { type: "less_equal" },
+	"==": { type: "equal" },
+	"!=": { type: "not_equal" },
+	">": { type: "greater" },
+	">=": { type: "greater_equal" },
+	"!": { type: "not" },
+	"&": { type: "and" },
+	"|": { type: "or" },
+	"=": { type: "define" },
+	".": { type: "dot" },
+	",": { type: "comma" },
+	":": { type: "colon" },
+	";": { type: "semicolon" }
 };
 
 // Creates keys
-export const keysBracketLeft = Object.keys(metasBracketLeft).sort((a, b) => a.length - b.length);
-export const keysBracketRight = Object.keys(metasBracketRight).sort((a, b) => a.length - b.length);
+export const keysLeft = Object.keys(metasLeft).sort((a, b) => a.length - b.length);
+export const keysRight = Object.keys(metasRight).sort((a, b) => a.length - b.length);
 export const keysSymbol = Object.keys(metasSymbol).sort((a, b) => b.length - a.length);
 
 // Creates parser
@@ -153,21 +76,21 @@ export function parseTokens(source: string): Token[] {
 		}
 
 		// Matches right bracket
-		const matchBracketRight = matchAny(unparsed, keysBracketRight);
-		if(matchBracketRight !== null) {
-			const meta = metasBracketRight[matchBracketRight as keyof typeof metasBracketRight];
+		const matchRight = matchAny(unparsed, keysRight);
+		if(matchRight !== null) {
+			const meta = metasRight[matchRight as keyof typeof metasRight];
 			if(block === meta.block) {
-				advance(meta.type, matchBracketRight);
+				advance(meta.type, matchRight);
 				blocks.pop();
 				continue;
 			}
 		}
 
 		// Matches left bracket
-		const matchBracketLeft = matchAny(unparsed, keysBracketLeft);
-		if(matchBracketLeft !== null) {
-			const meta = metasBracketLeft[matchBracketLeft as keyof typeof metasBracketLeft];
-			advance(meta.type, matchBracketLeft);
+		const matchLeft = matchAny(unparsed, keysLeft);
+		if(matchLeft !== null) {
+			const meta = metasLeft[matchLeft as keyof typeof metasLeft];
+			advance(meta.type, matchLeft);
 			blocks.push(meta.block);
 			continue;
 		}
