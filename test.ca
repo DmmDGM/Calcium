@@ -4,7 +4,7 @@ console.output variable;
 test = import "hello";
 hello = {
 	{
-		"hello", "world", "key": "value", 12345
+		"hello", "world", "key": "value", #: eyo :# 12345
 	},
 	{
 		1, +1, -1, (1.0), 1.0e1, "lizzard", lizzard

@@ -186,7 +186,7 @@ export function parseTokens(source: string): Token[] {
 		}
 
 		// Matches space
-		const matchSpace = findPattern(unparsed, /^\s+/);
+	const matchSpace = findPattern(unparsed, /^(\s+|#:.*?:#)+/);
 		if(matchSpace !== null) {
 			advance("space", matchSpace);
 			continue;
