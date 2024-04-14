@@ -4,12 +4,12 @@ import { Token } from "./types.js";
 // Creates metas
 export const metasBracketLeft = {
 	"'": {
-		block: "string_single",
-		type: "string_single_left"
+		block: "single_string",
+		type: "single_quote_left"
 	},
 	"\"": {
-		block: "string_double",
-		type: "string_double_left"
+		block: "double_string",
+		type: "double_quote_left"
 	},
 	"(": {
 		block: "round",
@@ -26,12 +26,12 @@ export const metasBracketLeft = {
 };
 export const metasBracketRight = {
 	"'": {
-		block: "string_single",
-		type: "string_single_right"
+		block: "single_string",
+		type: "single_quote_right"
 	},
 	"\"": {
-		block: "string_double",
-		type: "string_double_right"
+		block: "double_string",
+		type: "double_quote_right"
 	},
 	")": {
 		block: "round",
@@ -47,10 +47,10 @@ export const metasBracketRight = {
 	}
 };
 export const metasString = {
-	"string_single": {
+	"single_string": {
 		pattern: /^([^\\'{]*(\\.)*)*/
 	},
-	"string_double": {
+	"double_string": {
 		pattern: /^([^\\"{]*(\\.)*)*/
 	}
 };
@@ -70,23 +70,29 @@ export const metasSymbol = {
 	"%": {
 		type: "modulo"
 	},
+	"^": {
+		type: "power"
+	},
+	"**": {
+		type: "power"
+	},
 	"<": {
-		type: "less_than"
+		type: "less"
 	},
 	"<=": {
-		type: "less_equal_than"
+		type: "less_equal"
 	},
 	"==": {
-		type: "equal_to"
+		type: "equal"
 	},
 	"!=": {
-		type: "not_equal_to"
+		type: "not_equal"
 	},
 	">": {
-		type: "greater_than"
+		type: "greater"
 	},
 	">=": {
-		type: "greater_equal_than"
+		type: "greater_equal"
 	},
 	"!": {
 		type: "not"
@@ -98,7 +104,7 @@ export const metasSymbol = {
 		type: "or"
 	},
 	"=": {
-		type: "equal"
+		type: "define"
 	},
 	".": {
 		type: "dot"
@@ -132,13 +138,13 @@ export function parseTokens(source: string): Token[] {
 		unparsed = unparsed.slice(value.length);
 	}
 
-	// Parses source
+	// Parses tokens
 	while(unparsed.length) {
 		// Defines current block
 		const block = blocks[blocks.length - 1];
 
 		// Matches string
-		if(block === "string_single" || block === "string_double") {
+		if(block === "single_string" || block === "double_string") {
 			const meta = metasString[block];
 			const matchString = findPattern(unparsed, meta.pattern);
 			if(matchString !== null && matchString.length !== 0) {
@@ -166,6 +172,13 @@ export function parseTokens(source: string): Token[] {
 			continue;
 		}
 
+		// Matches space
+		const matchSpace = findPattern(unparsed, /^(\s+|#:.*?:#)+/);
+		if(matchSpace !== null) {
+			advance("space", matchSpace);
+			continue;
+		}
+
 		// Matches number
 		const matchNumber = findPattern(unparsed, /^[+-]?(\d*\.\d+|\d+(\.\d*)?)(e[+-]?\d+)?/);
 		if(matchNumber !== null) {
@@ -178,13 +191,6 @@ export function parseTokens(source: string): Token[] {
 		if(matchSymbol !== null) {
 			const meta = metasSymbol[matchSymbol as keyof typeof metasSymbol];
 			advance(meta.type, matchSymbol);
-			continue;
-		}
-
-		// Matches space
-		const matchSpace = findPattern(unparsed, /^(\s+|#:.*?:#)+/);
-		if(matchSpace !== null) {
-			advance("space", matchSpace);
 			continue;
 		}
 

@@ -1,5 +1,5 @@
 variable = 2;
-variable = "hell''{}o";
+variable = "hello {"world"}";
 console.output variable;
 test = import "hello";
 hello = {
