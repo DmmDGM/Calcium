@@ -2,60 +2,56 @@
 import { Token } from "./types.js";
 
 // Creates metas
-export const metasBracketEnd = {
+export const metasBracketLeft = {
 	"'": {
 		block: "string_single",
-		type: "string_single_end"
+		type: "string_single_left"
 	},
 	"\"": {
 		block: "string_double",
-		type: "string_double_end"
-	},
-	")": {
-		block: "round",
-		type: "round_end"
-	},
-	"]": {
-		block: "square",
-		type: "square_end"
-	},
-	"}": {
-		block: "curly",
-		type: "curly_end"
-	}
-};
-export const metasBracketStart = {
-	"'": {
-		block: "string_single",
-		type: "string_single_start"
-	},
-	"\"": {
-		block: "string_double",
-		type: "string_double_start"
+		type: "string_double_left"
 	},
 	"(": {
 		block: "round",
-		type: "round_start"
+		type: "round_left"
 	},
 	"[": {
 		block: "square",
-		type: "square_start"
+		type: "square_left"
 	},
 	"{": {
 		block: "curly",
-		type: "curly_start"
+		type: "curly_left"
+	}
+};
+export const metasBracketRight = {
+	"'": {
+		block: "string_single",
+		type: "string_single_right"
+	},
+	"\"": {
+		block: "string_double",
+		type: "string_double_right"
+	},
+	")": {
+		block: "round",
+		type: "round_right"
+	},
+	"]": {
+		block: "square",
+		type: "square_right"
+	},
+	"}": {
+		block: "curly",
+		type: "curly_right"
 	}
 };
 export const metasString = {
 	"string_single": {
-		pattern: /^([^\\'{]*(\\.)*)*/,
-		quote: "'",
-		type: "string_single_end"
+		pattern: /^([^\\'{]*(\\.)*)*/
 	},
 	"string_double": {
-		pattern: /^([^\\"{]*(\\.)*)*/,
-		quote: "\"",
-		type: "string_double_end"
+		pattern: /^([^\\"{]*(\\.)*)*/
 	}
 };
 export const metasSymbol = {
@@ -119,8 +115,8 @@ export const metasSymbol = {
 }
 
 // Creates keys
-export const keysBracketEnd = Object.keys(metasBracketEnd).sort((a, b) => a.length - b.length);
-export const keysBracketStart = Object.keys(metasBracketStart).sort((a, b) => a.length - b.length);
+export const keysBracketLeft = Object.keys(metasBracketLeft).sort((a, b) => a.length - b.length);
+export const keysBracketRight = Object.keys(metasBracketRight).sort((a, b) => a.length - b.length);
 export const keysSymbol = Object.keys(metasSymbol).sort((a, b) => b.length - a.length);
 
 // Creates parser
@@ -150,22 +146,22 @@ export function parseTokens(source: string): Token[] {
 			}
 		}
 
-		// Matches ending bracket
-		const matchBracketEnd = findOne(unparsed, keysBracketEnd);
-		if(matchBracketEnd !== null) {
-			const meta = metasBracketEnd[matchBracketEnd as keyof typeof metasBracketEnd];
+		// Matches right bracket
+		const matchBracketRight = findOne(unparsed, keysBracketRight);
+		if(matchBracketRight !== null) {
+			const meta = metasBracketRight[matchBracketRight as keyof typeof metasBracketRight];
 			if(block === meta.block) {
-				advance(meta.type, matchBracketEnd);
+				advance(meta.type, matchBracketRight);
 				blocks.pop();
 				continue;
 			}
 		}
 
-		// Matches starting bracket
-		const matchBracketStart = findOne(unparsed, keysBracketStart);
-		if(matchBracketStart !== null) {
-			const meta = metasBracketStart[matchBracketStart as keyof typeof metasBracketStart];
-			advance(meta.type, matchBracketStart);
+		// Matches left bracket
+		const matchBracketLeft = findOne(unparsed, keysBracketLeft);
+		if(matchBracketLeft !== null) {
+			const meta = metasBracketLeft[matchBracketLeft as keyof typeof metasBracketLeft];
+			advance(meta.type, matchBracketLeft);
 			blocks.push(meta.block);
 			continue;
 		}
@@ -186,7 +182,7 @@ export function parseTokens(source: string): Token[] {
 		}
 
 		// Matches space
-	const matchSpace = findPattern(unparsed, /^(\s+|#:.*?:#)+/);
+		const matchSpace = findPattern(unparsed, /^(\s+|#:.*?:#)+/);
 		if(matchSpace !== null) {
 			advance("space", matchSpace);
 			continue;
