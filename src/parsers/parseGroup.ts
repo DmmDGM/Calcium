@@ -1,28 +1,26 @@
 // Imports
-import { Group, Token } from "./types.js";
+import { Group, Token } from "../types.js";
 
 // Creates metas
-export const metasRight = {
-	"quote_right": { block: "string" },
-	"round_right": { block: "round" },
-	"square_right": { block: "square" },
-	"curly_right": { block: "curly" }
-};
 export const metasLeft = {
 	"quote_left": { block: "string" },
 	"round_left": { block: "round" },
 	"square_left": { block: "square" },
-	"curly_left": { block: "curly" }
+	"curly_left": { block: "curly" },
+	"angle_left": { block: "angle" }
+};
+export const metasRight = {
+	"quote_right": { block: "string" },
+	"round_right": { block: "round" },
+	"square_right": { block: "square" },
+	"curly_right": { block: "curly" },
+	"angle_right": { block: "angle" }
 };
 
 // Creates parser
 export function parseGroup(tokens: Token[]): Group {
 	// Initializes parser
-	const global = {
-		index: 0,
-		type: "global",
-		value: []
-	};
+	const global = { index: 0, type: "global", value: [] };
 	const groups: Group[] = [ global ];
 
 	// Parses groups

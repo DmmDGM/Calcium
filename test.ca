@@ -1,12 +1,1 @@
-variable = 2;
-variable = "hello {"world"}";
-console.output variable;
-test = import "hello";
-hello = {
-	{
-		"hello", "world", "key": "value", #: eyo :# 12345
-	},
-	{
-		1, +1, -1, (1.0), 1.0e1, "lizzard", lizzard
-	}
-}[1 + 1 / 1 * 1 == 1];
+console.output 1 + (1 * 1);
